@@ -2,7 +2,7 @@
   // 簡易ログイン用の設定（GitHub Pagesではソースコードから確認できます）
   // 必ず変更してください。ただし変更しても本格的なアクセス制御にはなりません。
   const LOGIN_USERNAME = 'kazoku';
-  const LOGIN_PASSWORD = 'change-this-password';
+  const LOGIN_PASSWORD = 'password';
 
   const loginScreen = document.getElementById('loginScreen');
   const appContent = document.getElementById('appContent');
