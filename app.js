@@ -1,4 +1,49 @@
 (() => {
+  // 簡易ログイン用の設定（GitHub Pagesではソースコードから確認できます）
+  // 必ず変更してください。ただし変更しても本格的なアクセス制御にはなりません。
+  const LOGIN_USERNAME = 'kazoku';
+  const LOGIN_PASSWORD = 'change-this-password';
+
+  const loginScreen = document.getElementById('loginScreen');
+  const appContent = document.getElementById('appContent');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  const logoutButton = document.getElementById('logoutButton');
+
+  function showApp() {
+    loginScreen.hidden = true;
+    appContent.hidden = false;
+    startMonitorApp();
+  }
+
+  function showLogin() {
+    appContent.hidden = true;
+    loginScreen.hidden = false;
+    document.getElementById('loginPassword').value = '';
+  }
+
+  loginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
+      sessionStorage.setItem('indoorMonitorLoggedIn', '1');
+      loginError.textContent = '';
+      showApp();
+    } else {
+      loginError.textContent = 'ユーザー名またはパスワードが違います。';
+    }
+  });
+
+  logoutButton.addEventListener('click', () => {
+    sessionStorage.removeItem('indoorMonitorLoggedIn');
+    showLogin();
+  });
+
+  function startMonitorApp() {
+    if (window.monitorAppStarted) return;
+    window.monitorAppStarted = true;
+
   const cfg = window.MONITOR_CONFIG || {};
   const $ = id => document.getElementById(id);
   const labels = {1:{title:'室温の推移',legend:'室温（℃）',unit:'℃'},2:{title:'湿度の推移',legend:'湿度（%）',unit:'%'},3:{title:'ガスセンサー値の推移',legend:'ガスセンサー値（校正前）',unit:''}};
@@ -71,4 +116,12 @@
   $('refreshBtn').addEventListener('click',refresh); $('historyRefresh').addEventListener('click',refresh); window.addEventListener('resize',drawChart);
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
   refresh(); setInterval(refresh, Math.max(30000, Number(cfg.refreshMs)||30000));
+
+  }
+
+  if (sessionStorage.getItem('indoorMonitorLoggedIn') === '1') {
+    showApp();
+  } else {
+    showLogin();
+  }
 })();
